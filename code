@@ -1,0 +1,180 @@
+Step 1 #Data Ingestion
+
+import pandas as pd
+
+# Read CSV file
+sales_data = pd.read_csv('sales_data.csv')
+products_data = pd.read_csv('products.csv')
+transactions_data = pd.read_csv('transactions.csv')
+
+# Display the first few rows
+print(sales_data.head())
+print(products_data.head())
+print(transactions_data.head())
+--------------------------------------------------------------------
+#parsing the data
+import csv
+
+# Define the file name
+file_name = 'sales_data.csv'
+
+# Open the CSV file
+with open(file_name, mode='r') as file:
+    # Create a CSV reader object
+    csv_reader = csv.reader(file)
+    
+    # Extract the header
+    header = next(csv_reader)
+    print(f'Header: {header}')
+    
+    # Extract the rows
+    rows = [row for row in csv_reader]
+    print(f'First 5 rows: {rows[:5]}')
+
+
+# Define the file name
+file_name = 'transactions.csv'
+
+# Open the CSV file
+with open(file_name, mode='r') as file:
+    # Create a CSV reader object
+    csv_reader = csv.reader(file)
+    
+    # Extract the header
+    header = next(csv_reader)
+    print(f'Header: {header}')
+    
+    # Extract the rows
+    rows = [row for row in csv_reader]
+    print(f'First 5 rows: {rows[:5]}')
+
+# Define the file name
+file_name = 'products.csv'
+
+# Open the CSV file
+with open(file_name, mode='r') as file:
+    # Create a CSV reader object
+    csv_reader = csv.reader(file)
+    
+    # Extract the header
+    header = next(csv_reader)
+    print(f'Header: {header}')
+    
+    # Extract the rows
+    rows = [row for row in csv_reader]
+    print(f'First 5 rows: {rows[:5]}')
+------------------------------------------------------------------------
+
+#Fetching Data from External API (Exchange Rates)
+
+# Define the API endpoint and headers for authentication
+api_url = 'https://example.com/api/customer_data'
+headers = {'Authorization': 'postman://auth/callback?code=d7dbebd454bdc013eb9e543147e40c4dfd6366ffb77b08989e9956b8c92f74f8'}
+
+# Fetch data from the API
+response = requests.get(api_url, headers=headers)
+
+# Check if the request was successful
+if response.status_code == 200:
+    customer_data = response.json()
+    print(customer_data)
+else:
+    print(f"Failed to fetch data: {response.status_code}")
+-----------------------------------------------------------------------------------------------
+
+ #Fetching Data from Internal API (Customer Demographics)
+
+# Define the API endpoint and headers for authentication
+api_url = 'https://example.com/api/customer_data'
+headers = {'Authorization': 'postman://auth/callback?code=d7dbebd454bdc013eb9e543147e40c4dfd6366ffb77b08989e9956b8c92f74f8'}
+
+# Fetch data from the API
+response = requests.get(api_url, headers=headers)
+
+# Check if the request was successful
+if response.status_code == 200:
+    customer_data = response.json()
+    print(customer_data)
+else:
+    print(f"Failed to fetch data: {response.status_code}")
+
+--------------------------------------------------------------------------------------------
+
+ #Fetching Data from Database
+
+from sqlalchemy import create_engine
+import pandas as pd
+
+# Create a database connection
+engine = create_engine('postgresql://username:password@localhost:5432/mydatabase')
+
+# Query data from the products table
+products_data = pd.read_sql('SELECT * FROM products', engine)
+print(products_data.head())
+
+# Query data from the transactions table
+transactions_data = pd.read_sql('SELECT * FROM transactions', engine)
+print(transactions_data.head())
+
+
+-------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------
+Step 2: #Data Standardization
+
+#Designing a Data Model
+
+import pandas as pd
+
+# Merge sales data with product data
+merged_data = pd.merge(sales_data, products_data, on='Product_ID')
+
+# Merge with customer data
+merged_data = pd.merge(merged_data, customer_data, left_on='Customer_ID', right_on='Customer_ID')
+
+# Standardize column names and data types
+merged_data.rename(columns={
+    'Transaction_ID': 'transaction_id',
+    'Product_ID': 'product_id',
+    'Quantity': 'quantity',
+    'Price': 'price',
+    'Transaction_Date': 'transaction_date',
+    'Customer_ID': 'customer_id',
+    'Customer_Name': 'customer_name',
+    'Age': 'age',
+    'Gender': 'gender',
+    'Location': 'location',
+    'Date_Joined': 'date_joined',
+    'Product_Name': 'product_name',
+    'Category': 'category',
+    'Stock_Available': 'stock_available'
+}, inplace=True)
+
+# Save the standardized data to a new CSV file
+merged_data.to_csv('standardized_data.csv', index=False)
+----------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------
+
+
+
+Step 3: #Data Preprocessing Pipeline
+
+
+def preprocess_data(data):
+    # Handle missing data
+    data.fillna(method='ffill', inplace=True)
+    
+    # Remove duplicate records
+    data.drop_duplicates(inplace=True)
+    
+    # Handle abnormal values
+    data = data[data['price'] >= 0]
+    
+    # Feature engineering (example: converting categorical variables)
+    data['gender'] = data['gender'].map({'Male': 1, 'Female': 0})
+    
+    return data
+
+# Apply preprocessing
+processed_data = preprocess_data(merged_data)
+print(processed_data.head())
+
